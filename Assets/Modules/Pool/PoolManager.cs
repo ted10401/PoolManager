@@ -5,71 +5,103 @@ namespace JSLCore.Pool
 {
     public class PoolManager : MonoSingleton<PoolManager>
 	{
-        public int DEFAULT_SPAWN_SIZE = 5;
-        private Dictionary<string, GameObjectPool> m_gameObjectPools;
-
-        private void Awake()
-		{
-			m_gameObjectPools = new Dictionary<string, GameObjectPool>();
-		}
-
-        public void AddPool(GameObject referenceAsset, int initialSize)
+        public void AddPool<T>(T reference, int initialSize) where T : class
         {
-            if (m_gameObjectPools.ContainsKey(referenceAsset.name))
-            {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(referenceAsset.name))
-            {
-                JSLDebug.LogError("[ObjectPoolManager] - The key is null or empty, register fail.");
-                return;
-            }
-
-            if (referenceAsset == null)
-            {
-                JSLDebug.LogError("[ObjectPoolManager] - The reference asset is null, register fail.");
-                return;
-            }
-
-            m_gameObjectPools[referenceAsset.name] = new GameObjectPool(referenceAsset.name, referenceAsset, initialSize);
+            PoolCollections<T>.AddPool(reference, initialSize);
         }
 
-        public GameObject Get(GameObject referenceAsset)
+        public T Get<T>(T reference) where T : class
         {
-            if (!HasPool(referenceAsset.name))
-            {
-                AddPool(referenceAsset, DEFAULT_SPAWN_SIZE);
-                JSLDebug.LogErrorFormat(string.Format("[ObjectPoolManager] - ObjectPool \"{0}\" doesn't exist. Create a new one for it.", referenceAsset.name));
-            }
-
-            return m_gameObjectPools[referenceAsset.name].Get();
+            return PoolCollections<T>.GetPool(reference).Get();
         }
 
-        public void Recycle(GameObject recycleAsset)
+        public void Recycle<T>(T reference) where T : class
         {
-            if (!HasPool(recycleAsset.name))
-            {
-                JSLDebug.LogErrorFormat(string.Format("[ObjectPoolManager] - ObjectPool \"{0}\" doesn't exist. Destroy the GameObject directly", recycleAsset.name));
-                GameObject.Destroy(recycleAsset);
-            }
-
-            m_gameObjectPools[recycleAsset.name].Recycle(recycleAsset);
+            PoolCollections<T>.GetPool(reference).Recycle(reference);
         }
-
-        private bool HasPool(string key)
-		{
-			return m_gameObjectPools.ContainsKey(key);
-		}
 
         public void Clear()
         {
-            foreach (KeyValuePair<string, GameObjectPool> kvp in m_gameObjectPools)
+
+        }
+
+        private static class PoolCollections<T> where T : class
+        {
+            private const int DEFAULT_INITIAL_SIZE = 5;
+
+            private static ClassPool<T> m_defaultPool;
+            private static Dictionary<string, ClassPool<T>> m_pools;
+
+            public static void AddPool(T reference, int initialSize)
             {
-                kvp.Value.Destroy();
+                string key = GetKey(reference);
+
+                if (string.IsNullOrEmpty(key))
+                {
+                    InitializeDefaultPool(reference, initialSize);
+                }
+                else
+                {
+                    InitializePools(key, reference, initialSize);
+                }
             }
 
-            m_gameObjectPools.Clear();
+            public static ClassPool<T> GetPool(T reference)
+            {
+                string key = GetKey(reference);
+
+                if (string.IsNullOrEmpty(key))
+                {
+                    InitializeDefaultPool(reference, DEFAULT_INITIAL_SIZE);
+                    return m_defaultPool;
+                }
+                else
+                {
+                    InitializePools(key, reference, DEFAULT_INITIAL_SIZE);
+                    return m_pools[key];
+                }
+            }
+
+            private static string GetKey(T reference)
+            {
+                string key = string.Empty;
+
+                if (reference is GameObject)
+                {
+                    key = (reference as GameObject).name;
+                }
+                else if (reference is Component)
+                {
+                    key = (reference as Component).gameObject.name;
+                }
+                else if (reference is Object)
+                {
+                    key = (reference as Object).name;
+                }
+
+                return key;
+            }
+
+            private static void InitializeDefaultPool(T reference, int initialSize)
+            {
+                if (m_defaultPool == null)
+                {
+                    m_defaultPool = new ClassPool<T>(reference, initialSize);
+                }
+            }
+
+            private static void InitializePools(string key, T reference, int initialSize)
+            {
+                if (m_pools == null)
+                {
+                    m_pools = new Dictionary<string, ClassPool<T>>();
+                    m_pools.Add(key, new ClassPool<T>(reference, initialSize));
+                }
+                else if (!m_pools.ContainsKey(key))
+                {
+                    m_pools.Add(key, new ClassPool<T>(reference, initialSize));
+                }
+            }
         }
     }
 }
