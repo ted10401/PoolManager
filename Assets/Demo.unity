@@ -145,12 +145,7 @@ MonoBehaviour:
   gameObjectReference2: {fileID: 1454983051}
   audioSourceReference1: {fileID: 912508630}
   audioSourceReference2: {fileID: 2002030365}
-  meshReference1: {fileID: 0}
-  meshReference2: {fileID: 0}
   m_recycleMeshes: []
-  simpleClassReference:
-    x: 0
-    y: 0
   m_recycleSimpleClasses: []
 --- !u!4 &884511145
 Transform:

@@ -20,23 +20,9 @@ public class UnitTest_PoolManager : MonoBehaviour
     public AudioSource audioSourceReference2;
     private Queue<AudioSource> m_recycleAudioSources = new Queue<AudioSource>();
 
-    public Mesh meshReference1;
-    public Mesh meshReference2;
     [SerializeField] private List<Mesh> m_recycleMeshes = new List<Mesh>();
 
-    public SimpleClass simpleClassReference;
     [SerializeField] private List<SimpleClass> m_recycleSimpleClasses = new List<SimpleClass>();
-
-    private void Awake()
-    {
-        meshReference1 = new Mesh();
-        meshReference1.name = "Mesh 1";
-
-        meshReference2 = new Mesh();
-        meshReference2.name = "Mesh 2";
-
-        simpleClassReference = new SimpleClass();
-    }
 
     private void Update()
     {
@@ -50,7 +36,7 @@ public class UnitTest_PoolManager : MonoBehaviour
             m_recycleGameObjects.Enqueue(PoolManager.Instance.Get(gameObjectReference2));
         }
 
-        if (Input.GetKey(KeyCode.Alpha3) && m_recycleGameObjects.Count > 0)
+        if (Input.GetKeyDown(KeyCode.Alpha3) && m_recycleGameObjects.Count > 0)
         {
             m_recycleGameObjects.Dequeue().Recycle();
         }
@@ -77,7 +63,7 @@ public class UnitTest_PoolManager : MonoBehaviour
             m_recycleAudioSources.Enqueue(PoolManager.Instance.Get(audioSourceReference2));
         }
 
-        if (Input.GetKey(KeyCode.E) && m_recycleAudioSources.Count > 0)
+        if (Input.GetKeyDown(KeyCode.E) && m_recycleAudioSources.Count > 0)
         {
             m_recycleAudioSources.Dequeue().Recycle();
         }
@@ -96,38 +82,31 @@ public class UnitTest_PoolManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            m_recycleMeshes.Add(PoolManager.Instance.Get(meshReference1));
+            m_recycleMeshes.Add(PoolManager.Instance.Get<Mesh>());
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            m_recycleMeshes.Add(PoolManager.Instance.Get(meshReference2));
-        }
-
-        if (Input.GetKey(KeyCode.D) && m_recycleMeshes.Count > 0)
+        if (Input.GetKeyDown(KeyCode.S) && m_recycleMeshes.Count > 0)
         {
             m_recycleMeshes[0].Recycle();
             m_recycleMeshes.RemoveAt(0);
         }
 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            PoolManager.Instance.Clear<Mesh>();
+        }
+
         if (Input.GetKeyDown(KeyCode.F))
         {
-            PoolManager.Instance.Clear(meshReference1);
-            PoolManager.Instance.Clear(meshReference2);
+            PoolManager.Instance.Destroy<Mesh>();
         }
 
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
-            PoolManager.Instance.Destroy(meshReference1);
-            PoolManager.Instance.Destroy(meshReference2);
+            m_recycleSimpleClasses.Add(PoolManager.Instance.Get<SimpleClass>());
         }
 
-        if (Input.GetKey(KeyCode.Z))
-        {
-            m_recycleSimpleClasses.Add(PoolManager.Instance.Get(simpleClassReference));
-        }
-
-        if (Input.GetKey(KeyCode.X) && m_recycleSimpleClasses.Count > 0)
+        if (Input.GetKeyDown(KeyCode.X) && m_recycleSimpleClasses.Count > 0)
         {
             m_recycleSimpleClasses[0].Recycle();
             m_recycleSimpleClasses.RemoveAt(0);
@@ -135,12 +114,12 @@ public class UnitTest_PoolManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            PoolManager.Instance.Clear(simpleClassReference);
+            PoolManager.Instance.Clear<SimpleClass>();
         }
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            PoolManager.Instance.Destroy(simpleClassReference);
+            PoolManager.Instance.Destroy<SimpleClass>();
         }
     }
 }

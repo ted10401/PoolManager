@@ -5,6 +5,16 @@ namespace JSLCore.Pool
 {
     public class Pool<T> where T : class
     {
+        private enum PoolType
+        {
+            None,
+
+            GameObject,
+            Component,
+            Object,
+            Class
+        }
+
         private T m_reference;
         private string m_key;
         private PoolType m_poolType;
@@ -15,15 +25,57 @@ namespace JSLCore.Pool
         private GameObject m_cacheGameObject;
         private Component m_cacheComponent;
 
-        public Pool(T reference, int initialSize)
+        public Pool(string key, T reference, int initialSize)
         {
+            m_key = key;
             m_reference = reference;
-            m_key = m_reference.GetKey();
-            m_poolType = m_reference.GetPoolType();
-            m_root = m_reference.GetRoot();
+            m_poolType = GetPoolType(reference);
+            m_root = GetRoot(reference);
             m_pool = new Queue<T>();
 
             Spawn(initialSize);
+        }
+
+        private PoolType GetPoolType(T reference)
+        {
+            if (reference == null)
+            {
+                return PoolType.None;
+            }
+            else if (reference is GameObject)
+            {
+                return PoolType.GameObject;
+            }
+            else if (reference is Component)
+            {
+                return PoolType.Component;
+            }
+            else if (reference is Object)
+            {
+                return PoolType.Object;
+            }
+            else
+            {
+                return PoolType.Class;
+            }
+        }
+
+        private Transform GetRoot(T reference)
+        {
+            Transform root = null;
+
+            if (reference is GameObject)
+            {
+                root = new GameObject(string.Format("[Pool ({0})] - {1}", typeof(T).Name, m_key)).transform;
+                root.SetParent(PoolManager.Instance.transform);
+            }
+            else if (reference is Component)
+            {
+                root = new GameObject(string.Format("[Pool ({0})] - {1}", typeof(T).Name, m_key)).transform;
+                root.SetParent(PoolManager.Instance.transform);
+            }
+
+            return root;
         }
 
         protected void Spawn(int spawnSize)
