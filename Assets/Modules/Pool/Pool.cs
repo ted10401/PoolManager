@@ -5,60 +5,25 @@ namespace JSLCore.Pool
 {
     public class Pool<T> where T : class
     {
-        private enum PoolType
-        {
-            None,
-
-            GameObject,
-            Component,
-            Object,
-            Class
-        }
-
-        private string m_key;
         private T m_reference;
+        private string m_key;
         private PoolType m_poolType;
         private Transform m_root;
-        protected Queue<T> m_pool;
+        private Queue<T> m_pool;
+
+        private T m_cacheGeneric;
+        private GameObject m_cacheGameObject;
+        private Component m_cacheComponent;
 
         public Pool(T reference, int initialSize)
         {
             m_reference = reference;
-            UpdatePoolType();
-
+            m_key = m_reference.GetKey();
+            m_poolType = m_reference.GetPoolType();
+            m_root = m_reference.GetRoot();
             m_pool = new Queue<T>();
-            Spawn(initialSize);
-        }
 
-        private void UpdatePoolType()
-        {
-            if (m_reference == null)
-            {
-                m_poolType = PoolType.None;
-            }
-            else if (m_reference is GameObject)
-            {
-                m_poolType = PoolType.GameObject;
-                m_key = (m_reference as GameObject).name;
-                m_root = new GameObject(string.Format("[Pool ({0})] - {1}", typeof(T).Name, m_key)).transform;
-                m_root.SetParent(PoolManager.Instance.transform);
-            }
-            else if(m_reference is Component)
-            {
-                m_poolType = PoolType.Component;
-                m_key = (m_reference as Component).gameObject.name;
-                m_root = new GameObject(string.Format("[Pool ({0})] - {1}", typeof(T).Name, m_key)).transform;
-                m_root.SetParent(PoolManager.Instance.transform);
-            }
-            else if(m_reference is Object)
-            {
-                m_poolType = PoolType.Object;
-                m_key = (m_reference as Object).name;
-            }
-            else
-            {
-                m_poolType = PoolType.Class;
-            }
+            Spawn(initialSize);
         }
 
         protected void Spawn(int spawnSize)
@@ -80,16 +45,17 @@ namespace JSLCore.Pool
             Recycle(GenerateNewObject());
         }
 
-        protected virtual T GenerateNewObject()
+        private Object m_cacheObject;
+        private T GenerateNewObject()
         {
             switch(m_poolType)
             {
                 case PoolType.GameObject:
                 case PoolType.Component:
                 case PoolType.Object:
-                    Object cache = Object.Instantiate(m_reference as Object);
-                    cache.name = m_key;
-                    return cache as T;
+                    m_cacheObject = Object.Instantiate(m_reference as Object);
+                    m_cacheObject.name = m_key;
+                    return m_cacheObject as T;
                 default:
                     return null;
             }
@@ -107,40 +73,48 @@ namespace JSLCore.Pool
         {
             CheckingPool();
 
-            T cache = m_pool.Dequeue();
-            if(m_poolType == PoolType.GameObject)
+            m_cacheGeneric = m_pool.Dequeue();
+
+            m_cacheGameObject = null;
+            if (m_poolType == PoolType.GameObject)
             {
-                GameObject gameObject = cache as GameObject;
-                gameObject.name = m_key;
-                gameObject.transform.SetParent(null);
-                gameObject.SetActive(true);
+                m_cacheGameObject = m_cacheGeneric as GameObject;
             }
             else if (m_poolType == PoolType.Component)
             {
-                Component component = cache as Component;
-                component.gameObject.name = m_key;
-                component.transform.SetParent(null);
-                component.gameObject.SetActive(true);
+                m_cacheComponent = m_cacheGeneric as Component;
+                m_cacheGameObject = m_cacheComponent.gameObject;
             }
 
-            return cache;
+            if(m_cacheGameObject != null)
+            {
+                m_cacheGameObject.name = m_key;
+                m_cacheGameObject.transform.SetParent(null);
+                m_cacheGameObject.SetActive(true);
+            }
+
+            return m_cacheGeneric;
         }
 
         public virtual void Recycle(T asset)
         {
             m_pool.Enqueue(asset);
 
+            m_cacheGameObject = null;
             if(m_poolType == PoolType.GameObject)
             {
-                GameObject cache = asset as GameObject;
-                cache.transform.SetParent(m_root);
-                cache.SetActive(false);
+                m_cacheGameObject = asset as GameObject;
             }
             else if (m_poolType == PoolType.Component)
             {
-                Component cache = asset as Component;
-                cache.transform.SetParent(m_root);
-                cache.gameObject.SetActive(false);
+                m_cacheComponent = asset as Component;
+                m_cacheGameObject = m_cacheComponent.gameObject;
+            }
+
+            if(m_cacheGameObject != null)
+            {
+                m_cacheGameObject.transform.SetParent(m_root);
+                m_cacheGameObject.SetActive(false);
             }
         }
 
@@ -148,7 +122,7 @@ namespace JSLCore.Pool
         {
             while (m_pool.Count != 0)
             {
-                if(m_poolType != PoolType.None && m_poolType != PoolType.Class)
+                if(m_reference is Object)
                 {
                     Object.Destroy(m_pool.Dequeue() as Object);
                 }

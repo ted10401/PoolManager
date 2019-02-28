@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace JSLCore.Pool
 {
@@ -39,7 +38,7 @@ namespace JSLCore.Pool
 
             public static void AddPool(T reference, int initialSize)
             {
-                string key = GetKey(reference);
+                string key = reference.GetKey();
 
                 if (string.IsNullOrEmpty(key))
                 {
@@ -53,7 +52,7 @@ namespace JSLCore.Pool
 
             public static Pool<T> GetPool(T reference)
             {
-                string key = GetKey(reference);
+                string key = reference.GetKey();
 
                 if (string.IsNullOrEmpty(key))
                 {
@@ -74,7 +73,7 @@ namespace JSLCore.Pool
 
             public static void DestroyPool(T reference)
             {
-                string key = GetKey(reference);
+                string key = reference.GetKey();
 
                 if (string.IsNullOrEmpty(key))
                 {
@@ -92,26 +91,6 @@ namespace JSLCore.Pool
                         m_pools.Remove(key);
                     }
                 }
-            }
-
-            private static string GetKey(T reference)
-            {
-                string key = string.Empty;
-
-                if (reference is GameObject)
-                {
-                    key = (reference as GameObject).name;
-                }
-                else if (reference is Component)
-                {
-                    key = (reference as Component).gameObject.name;
-                }
-                else if (reference is Object)
-                {
-                    key = (reference as Object).name;
-                }
-
-                return key;
             }
 
             private static void InitializeDefaultPool(T reference, int initialSize)
