@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace JSLCore.Pool
 {
-    public class ClassPool<T> where T : class
+    public class Pool<T> where T : class
     {
         private const int DEFAULT_SPAWN_SIZE = 5;
 
@@ -23,7 +23,7 @@ namespace JSLCore.Pool
         private Transform m_root;
         protected Queue<T> m_pool;
 
-        public ClassPool(T reference, int initialSize)
+        public Pool(T reference, int initialSize)
         {
             m_reference = reference;
             UpdatePoolType();

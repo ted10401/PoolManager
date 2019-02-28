@@ -29,8 +29,8 @@ namespace JSLCore.Pool
         {
             private const int DEFAULT_INITIAL_SIZE = 5;
 
-            private static ClassPool<T> m_defaultPool;
-            private static Dictionary<string, ClassPool<T>> m_pools;
+            private static Pool<T> m_defaultPool;
+            private static Dictionary<string, Pool<T>> m_pools;
 
             public static void AddPool(T reference, int initialSize)
             {
@@ -46,7 +46,7 @@ namespace JSLCore.Pool
                 }
             }
 
-            public static ClassPool<T> GetPool(T reference)
+            public static Pool<T> GetPool(T reference)
             {
                 string key = GetKey(reference);
 
@@ -86,7 +86,7 @@ namespace JSLCore.Pool
             {
                 if (m_defaultPool == null)
                 {
-                    m_defaultPool = new ClassPool<T>(reference, initialSize);
+                    m_defaultPool = new Pool<T>(reference, initialSize);
                 }
             }
 
@@ -94,12 +94,12 @@ namespace JSLCore.Pool
             {
                 if (m_pools == null)
                 {
-                    m_pools = new Dictionary<string, ClassPool<T>>();
-                    m_pools.Add(key, new ClassPool<T>(reference, initialSize));
+                    m_pools = new Dictionary<string, Pool<T>>();
+                    m_pools.Add(key, new Pool<T>(reference, initialSize));
                 }
                 else if (!m_pools.ContainsKey(key))
                 {
-                    m_pools.Add(key, new ClassPool<T>(reference, initialSize));
+                    m_pools.Add(key, new Pool<T>(reference, initialSize));
                 }
             }
         }

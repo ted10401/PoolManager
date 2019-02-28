@@ -2,8 +2,16 @@
 using System.Collections.Generic;
 using JSLCore.Pool;
 
-public class UnitTest : MonoBehaviour
+public class UnitTest_PoolManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class SimpleClass
+    {
+        public int x;
+        public int y;
+    }
+
+
     public GameObject gameObjectReference1;
     public GameObject gameObjectReference2;
     private Queue<GameObject> m_recycleGameObjects = new Queue<GameObject>();
