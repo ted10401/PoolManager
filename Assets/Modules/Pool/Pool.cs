@@ -64,12 +64,7 @@ namespace JSLCore.Pool
         {
             Transform root = null;
 
-            if (reference is GameObject)
-            {
-                root = new GameObject(string.Format("[Pool ({0})] - {1}", typeof(T).Name, m_key)).transform;
-                root.SetParent(PoolManager.Instance.transform);
-            }
-            else if (reference is Component)
+            if (m_poolType == PoolType.GameObject || m_poolType == PoolType.Component)
             {
                 root = new GameObject(string.Format("[Pool ({0})] - {1}", typeof(T).Name, m_key)).transform;
                 root.SetParent(PoolManager.Instance.transform);

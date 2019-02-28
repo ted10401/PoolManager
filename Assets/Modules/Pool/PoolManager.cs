@@ -153,7 +153,7 @@ namespace JSLCore.Pool
                 if (m_defaultPool == null)
                 {
                     m_defaultPool = new Pool<T>(key, new T(), initialSize);
-                    JSLDebug.LogFormat("[PoolCollections] - There is no default pool for type '{0}', create a new one.", typeof(T).Name);
+                    JSLDebug.LogFormat("[PoolCollections] - There is no default pool for type '{0}', create a new one with initial size '{1}'.", typeof(T).Name, initialSize);
                 }
             }
 
@@ -162,7 +162,7 @@ namespace JSLCore.Pool
                 if (m_defaultPool == null)
                 {
                     m_defaultPool = new Pool<T>(key, reference, initialSize);
-                    JSLDebug.LogFormat("[PoolCollections] - There is no default pool for type '{0}', create a new one.", typeof(T).Name);
+                    JSLDebug.LogFormat("[PoolCollections] - There is no default pool for type '{0}', create a new one with initial size '{1}'.", typeof(T).Name, initialSize);
                 }
             }
 
@@ -176,7 +176,7 @@ namespace JSLCore.Pool
                 if (!m_pools.ContainsKey(key))
                 {
                     m_pools.Add(key, new Pool<T>(key, reference, initialSize));
-                    JSLDebug.LogFormat("[PoolCollections] - There is no pool for type '{0}' of key '{1}', create a new one.", typeof(T).Name, key);
+                    JSLDebug.LogFormat("[PoolCollections] - There is no pool for type '{0}' of key '{1}', create a new one with initial size '{2}'.", typeof(T).Name, key, initialSize);
                 }
             }
         }
