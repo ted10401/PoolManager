@@ -5,8 +5,6 @@ namespace JSLCore.Pool
 {
     public class Pool<T> where T : class
     {
-        private const int DEFAULT_SPAWN_SIZE = 5;
-
         private enum PoolType
         {
             None,
@@ -67,7 +65,7 @@ namespace JSLCore.Pool
         {
             if (m_pool.Count >= spawnSize)
             {
-                JSLDebug.Log("[ObjectPool] - The pool size is bigger than the spawn size, don't need to create new object.");
+                JSLDebug.Log("[Pool] - The pool size is bigger than the spawn size, don't need to create new object.");
                 return;
             }
 
@@ -101,7 +99,7 @@ namespace JSLCore.Pool
         {
             if (m_pool.Count <= 0)
             {
-                Spawn(DEFAULT_SPAWN_SIZE);
+                Spawn(PoolManager.DEFAULT_SPAWN_SIZE);
             }
         }
 
@@ -157,6 +155,17 @@ namespace JSLCore.Pool
             }
 
             m_pool.Clear();
+        }
+
+        public void Destroy()
+        {
+            Clear();
+
+            m_reference = null;
+            if (m_root != null)
+            {
+                GameObject.Destroy(m_root.gameObject);
+            }
         }
     }
 }
