@@ -129,6 +129,10 @@ namespace JSLCore.Pool
                 {
                     Object.Destroy(m_pool.Dequeue() as Object);
                 }
+                else
+                {
+                    m_pool.Dequeue();
+                }
             }
 
             m_pool.Clear();
