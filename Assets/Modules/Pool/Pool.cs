@@ -52,9 +52,12 @@ namespace JSLCore.Pool
             {
                 case PoolType.GameObject:
                 case PoolType.Component:
-                case PoolType.Object:
                     m_cacheObject = Object.Instantiate(m_reference as Object);
                     m_cacheObject.name = m_key;
+                    return m_cacheObject as T;
+                case PoolType.Object:
+                    m_cacheObject = Object.Instantiate(m_reference as Object);
+                    m_cacheObject.name = typeof(T).Name;
                     return m_cacheObject as T;
                 default:
                     return null;

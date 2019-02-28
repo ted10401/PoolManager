@@ -4,6 +4,11 @@ namespace JSLCore.Pool
 {
     public static class PoolUtility
     {
+        public static void Recycle<T>(this T reference) where T : class
+        {
+            PoolManager.Instance.Recycle(reference);
+        }
+
         public static string GetKey<T>(this T reference) where T : class
         {
             string key = string.Empty;
@@ -15,10 +20,6 @@ namespace JSLCore.Pool
             else if (reference is Component)
             {
                 key = (reference as Component).gameObject.name;
-            }
-            else if (reference is Object)
-            {
-                key = (reference as Object).name;
             }
 
             return key;

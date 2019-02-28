@@ -52,7 +52,7 @@ public class UnitTest_PoolManager : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Alpha3) && m_recycleGameObjects.Count > 0)
         {
-            PoolManager.Instance.Recycle(m_recycleGameObjects.Dequeue());
+            m_recycleGameObjects.Dequeue().Recycle();
         }
 
         if(Input.GetKeyDown(KeyCode.Alpha4))
@@ -79,7 +79,7 @@ public class UnitTest_PoolManager : MonoBehaviour
 
         if (Input.GetKey(KeyCode.E) && m_recycleAudioSources.Count > 0)
         {
-            PoolManager.Instance.Recycle(m_recycleAudioSources.Dequeue());
+            m_recycleAudioSources.Dequeue().Recycle();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -106,7 +106,7 @@ public class UnitTest_PoolManager : MonoBehaviour
 
         if (Input.GetKey(KeyCode.D) && m_recycleMeshes.Count > 0)
         {
-            PoolManager.Instance.Recycle(m_recycleMeshes[0]);
+            m_recycleMeshes[0].Recycle();
             m_recycleMeshes.RemoveAt(0);
         }
 
@@ -129,7 +129,7 @@ public class UnitTest_PoolManager : MonoBehaviour
 
         if (Input.GetKey(KeyCode.X) && m_recycleSimpleClasses.Count > 0)
         {
-            PoolManager.Instance.Recycle(m_recycleSimpleClasses[0]);
+            m_recycleSimpleClasses[0].Recycle();
             m_recycleSimpleClasses.RemoveAt(0);
         }
 
