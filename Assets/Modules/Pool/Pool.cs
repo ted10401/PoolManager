@@ -172,13 +172,20 @@ namespace JSLCore.Pool
         {
             while (m_pool.Count != 0)
             {
-                if(m_reference is Object)
+                switch (m_poolType)
                 {
-                    Object.Destroy(m_pool.Dequeue() as Object);
-                }
-                else
-                {
-                    m_pool.Dequeue();
+                    case PoolType.GameObject:
+                        GameObject.Destroy(m_pool.Dequeue() as GameObject);
+                        break;
+                    case PoolType.Component:
+                        GameObject.Destroy((m_pool.Dequeue() as Component).gameObject);
+                        break;
+                    case PoolType.Object:
+                        Object.Destroy(m_pool.Dequeue() as Object);
+                        break;
+                    default:
+                        m_pool.Dequeue();
+                        break;
                 }
             }
 
