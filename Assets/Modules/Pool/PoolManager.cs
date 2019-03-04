@@ -7,47 +7,47 @@ namespace JSLCore.Pool
 	{
         public const int DEFAULT_SPAWN_SIZE = 5;
 
-        public void AddPool<T>(T reference, int initialSize) where T : class, new()
+        public void AddPool<T>(T reference, int initialSize) where T : class, new ()
         {
             PoolCollections<T>.AddPool(reference, initialSize);
         }
 
-        public T Get<T>() where T : class, new()
+        public T Get<T>() where T : class, new ()
         {
             return PoolCollections<T>.GetPool().Get();
         }
 
-        public T Get<T>(T reference) where T : class, new()
+        public T Get<T>(T reference) where T : class, new ()
         {
             return PoolCollections<T>.GetPool(reference).Get();
         }
 
-        public void Recycle<T>(T reference) where T : class, new()
+        public void Recycle<T>(T reference) where T : class, new ()
         {
             PoolCollections<T>.GetPool(reference).Recycle(reference);
         }
 
-        public void Clear<T>() where T : class, new()
+        public void Clear<T>() where T : class, new ()
         {
             PoolCollections<T>.ClearPool();
         }
 
-        public void Clear<T>(T reference) where T : class, new()
+        public void Clear<T>(T reference) where T : class, new ()
         {
             PoolCollections<T>.ClearPool(reference);
         }
 
-        public void Destroy<T>() where T : class, new()
+        public void Destroy<T>() where T : class, new ()
         {
             PoolCollections<T>.DestroyPool();
         }
 
-        public void Destroy<T>(T reference) where T : class, new()
+        public void Destroy<T>(T reference) where T : class, new ()
         {
             PoolCollections<T>.DestroyPool(reference);
         }
 
-        private static class PoolCollections<T> where T : class, new()
+        private static class PoolCollections<T> where T : class, new ()
         {
             private static Pool<T> m_defaultPool;
             private static Dictionary<string, Pool<T>> m_pools;
@@ -152,7 +152,7 @@ namespace JSLCore.Pool
             {
                 if (m_defaultPool == null)
                 {
-                    m_defaultPool = new Pool<T>(key, new T(), initialSize);
+                    m_defaultPool = new Pool<T>(key, initialSize);
                     JSLDebug.LogFormat("[PoolCollections] - There is no default pool for type '{0}', create a new one with initial size '{1}'.", typeof(T).Name, initialSize);
                 }
             }

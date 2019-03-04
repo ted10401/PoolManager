@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace JSLCore.Pool
 {
-    public class Pool<T> where T : class
+    public class Pool<T> where T : class, new ()
     {
         private enum PoolType
         {
@@ -25,12 +25,23 @@ namespace JSLCore.Pool
         private GameObject m_cacheGameObject;
         private Component m_cacheComponent;
 
+        public Pool(string key, int initialSize)
+        {
+            m_key = key;
+            m_reference = new T();
+            m_poolType = GetPoolType(m_reference);
+            m_root = GetRoot(m_reference);
+            m_pool = new Queue<T>();
+
+            Spawn(initialSize);
+        }
+
         public Pool(string key, T reference, int initialSize)
         {
             m_key = key;
             m_reference = reference;
-            m_poolType = GetPoolType(reference);
-            m_root = GetRoot(reference);
+            m_poolType = GetPoolType(m_reference);
+            m_root = GetRoot(m_reference);
             m_pool = new Queue<T>();
 
             Spawn(initialSize);
@@ -106,6 +117,8 @@ namespace JSLCore.Pool
                     m_cacheObject = Object.Instantiate(m_reference as Object);
                     m_cacheObject.name = typeof(T).Name;
                     return m_cacheObject as T;
+                case PoolType.Class:
+                    return new T();
                 default:
                     return null;
             }
